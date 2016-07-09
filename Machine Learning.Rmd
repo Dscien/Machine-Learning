@@ -1,0 +1,72 @@
+---
+title: "Machine Learning - Course Project"
+output: html_document
+---
+##Overview
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways.  The purpose of this project is to predict the manner in which participants performed the exercises
+
+##Data Processing
+Read the data, remove unneeded columns
+```{r, echo=TRUE, warning=FALSE, message= FALSE}
+library(randomForest)
+library(caret)
+set.seed(100) #reproducibility
+
+
+data <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings = c("", "NA", "#DIV/0!"))
+
+testdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings = c("", "NA", "#DIV/0!"))
+
+```
+
+```{r echo=TRUE}
+dim(data)
+```
+The table has 19622 rows.  Take 80% of the data to use as training data.
+
+```{r echo=TRUE}
+trainindex <- createDataPartition(data$classe, p = 0.8, list = FALSE)
+trainfull <- data[trainindex,]
+valset <- data[-trainindex,]
+```
+Use only the columns that have data in the set to be tested, and remove blanks.
+```{r echo=TRUE}
+traindata2 <- trainfull[,colSums(is.na(testdata)) == 0]
+novartrain <- traindata2[ -c(1:7)]
+valdata2 <- valset[,colSums(is.na(testdata)) == 0]
+novarval <- valdata2[ -c(1:7)]
+testdata2 <- testdata[ , colSums(is.na(testdata)) == 0]
+novartestdata <- testdata2[ -c(1:7)]
+
+```
+
+##Model
+We use the randomForest method to build a model using the training data and show the prediction results, which should match since we are using the same data in both cases
+```{r echo=TRUE}
+
+model <- randomForest(classe ~., data = novartrain)
+
+prediction<-predict(model,novartrain)
+
+print(table(prediction,novartrain$classe))
+```
+
+Now we test against the 20% of the data set we held back for validation
+```{r echo=TRUE}
+validation<-predict(model,novarval)
+
+print(table(validation,novarval$classe))
+
+confusionMatrix(validation,novarval$classe)
+```
+The cross validation accuracy is 99.4% so the out of sample error is therefore 0.6%.
+
+##Testing
+Now we use the test data set with our model to try and predict excercise outcomes.
+```{r echo=TRUE}
+
+modelvalidation<-predict(model,novartestdata)
+
+print(modelvalidation)
+```
+
