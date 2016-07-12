@@ -130,13 +130,12 @@ $(document).ready(function () {
 library(caret)
 set.seed(100) #reproducibility
 
-
 data &lt;- read.csv(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv&quot;, na.strings = c(&quot;&quot;, &quot;NA&quot;, &quot;#DIV/0!&quot;))
 
 testdata &lt;- read.csv(&quot;https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv&quot;, na.strings = c(&quot;&quot;, &quot;NA&quot;, &quot;#DIV/0!&quot;))</code></pre>
 <pre class="r"><code>dim(data)</code></pre>
 <pre><code>## [1] 19622   160</code></pre>
-<p>The table has 19622 rows. Take 80% of the data to use as training data.</p>
+<p>The table has 19622 rows. Take 80% of the data to use as training data. The remaining 20% is used as cross validation.</p>
 <pre class="r"><code>trainindex &lt;- createDataPartition(data$classe, p = 0.8, list = FALSE)
 trainfull &lt;- data[trainindex,]
 valset &lt;- data[-trainindex,]</code></pre>
@@ -163,7 +162,7 @@ print(table(prediction,novartrain$classe))</code></pre>
 ##          C    0    0 2738    0    0
 ##          D    0    0    0 2573    0
 ##          E    0    0    0    0 2886</code></pre>
-<p>Now we test against the 20% of the data set we held back for validation</p>
+<p>Now we test against the 20% of the data set we held back for cross validation</p>
 <pre class="r"><code>validation&lt;-predict(model,novarval)
 
 print(table(validation,novarval$classe))</code></pre>

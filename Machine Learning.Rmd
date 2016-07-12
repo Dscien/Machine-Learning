@@ -1,6 +1,6 @@
 ---
 title: "Machine Learning - Course Project"
-output: html_document
+output: pdf_document
 ---
 ##Overview
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways.  The purpose of this project is to predict the manner in which participants performed the exercises
@@ -12,7 +12,6 @@ library(randomForest)
 library(caret)
 set.seed(100) #reproducibility
 
-
 data <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings = c("", "NA", "#DIV/0!"))
 
 testdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings = c("", "NA", "#DIV/0!"))
@@ -22,7 +21,7 @@ testdata <- read.csv("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-te
 ```{r echo=TRUE}
 dim(data)
 ```
-The table has 19622 rows.  Take 80% of the data to use as training data.
+The table has 19622 rows.  Take 80% of the data to use as training data.  The remaining 20% is used as cross validation.
 
 ```{r echo=TRUE}
 trainindex <- createDataPartition(data$classe, p = 0.8, list = FALSE)
@@ -51,7 +50,7 @@ prediction<-predict(model,novartrain)
 print(table(prediction,novartrain$classe))
 ```
 
-Now we test against the 20% of the data set we held back for validation
+Now we test against the 20% of the data set we held back for cross validation
 ```{r echo=TRUE}
 validation<-predict(model,novarval)
 
